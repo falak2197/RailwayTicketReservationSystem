@@ -35,9 +35,9 @@ public class Main {
                     case 3: service.findTrainByNumber(scanner); break;
                     case 4: service.checkSeatAvailability(scanner); break;
                     case 5: service.viewTrainDetails(scanner); break;
-                    case 6: service.bookTicket(); break;
-                    case 7: service.cancelTicket(); break;
-                    case 8: service.checkPnrStatus(); break;
+                    case 6: service.bookTicket(scanner); break;
+                    case 7: service.cancelTicket(scanner); break;
+                    case 8: service.checkPnrStatus(scanner); break;
                     case 9: service.viewAllBookings(); break;
                     case 10:
                         System.out.println("Thank you for using the system. Goodbye!");
