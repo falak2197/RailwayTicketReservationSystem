@@ -1,7 +1,6 @@
 // Main.java
 // Purpose: Entry point. Shows a console menu and calls RailwayService.
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -9,48 +8,56 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         RailwayService service = new RailwayService();
-        boolean running = true;
+        int choice = 0;
 
-        while (running) {
-            System.out.println("\n===== Railway Ticket Reservation System =====");
-            System.out.println("1. View All Trains");
-            System.out.println("2. Search Trains by Source and Destination");
-            System.out.println("3. Find Train by Number");
-            System.out.println("4. Check Seat Availability");
-            System.out.println("5. View Train Details");
-            System.out.println("6. Book Ticket");
-            System.out.println("7. Cancel Ticket");
-            System.out.println("8. Check PNR Status");
-            System.out.println("9. View All Bookings");
-            System.out.println("10. Exit");
-            System.out.print("Enter your choice: ");
+        do {
+            System.out.println("\n=================================");
+            System.out.println("     RAILWAY RESERVATION SYSTEM");
+            System.out.println("=================================\n");
+            System.out.println("1. Display All Trains");
+            System.out.println("2. Search Trains");
+            System.out.println("3. Book Ticket");
+            System.out.println("4. Cancel Ticket");
+            System.out.println("5. Check PNR Status");
+            System.out.println("6. View All Bookings");
+            System.out.println("7. Exit\n");
+            System.out.print("Enter Choice: ");
 
             try {
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // clear the newline character left behind by nextInt()
+                choice = Integer.parseInt(scanner.nextLine().trim());
 
                 switch (choice) {
-                    case 1: service.displayAllTrains(); break;
-                    case 2: service.searchTrains(scanner); break;
-                    case 3: service.findTrainByNumber(scanner); break;
-                    case 4: service.checkSeatAvailability(scanner); break;
-                    case 5: service.viewTrainDetails(scanner); break;
-                    case 6: service.bookTicket(); break;
-                    case 7: service.cancelTicket(); break;
-                    case 8: service.checkPnrStatus(); break;
-                    case 9: service.viewAllBookings(); break;
-                    case 10:
+                    case 1:
+                        service.displayAllTrains();
+                        break;
+                    case 2:
+                        service.searchTrains(scanner);
+                        break;
+                    case 3:
+                        service.bookTicket(scanner);
+                        break;
+                    case 4:
+                        service.cancelTicket(scanner);
+                        break;
+                    case 5:
+                        service.checkPnrStatus(scanner);
+                        break;
+                    case 6:
+                        service.viewAllBookings();
+                        break;
+                    case 7:
                         System.out.println("Thank you for using the system. Goodbye!");
-                        running = false;
                         break;
                     default:
-                        System.out.println("Invalid choice. Please enter 1-10.");
+                        System.out.println("Invalid choice. Please enter 1-7.");
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("Please enter a number.");
-                scanner.nextLine(); // clear the invalid input
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number.");
+                choice = 0;
             }
-        }
+
+        } while (choice != 7);
+
         scanner.close();
     }
 }

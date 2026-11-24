@@ -2,18 +2,17 @@
 // Purpose: Connects all the managers together. Main.java talks only to this class.
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class RailwayService {
 
     private TrainManager trainManager;
-    private PassengerManager passengerManager;
     private BookingManager bookingManager;
     private FareCalculator fareCalculator;
 
     public RailwayService() {
         trainManager = new TrainManager();
-        passengerManager = new PassengerManager();
         bookingManager = new BookingManager();
         fareCalculator = new FareCalculator();
     }
@@ -72,7 +71,7 @@ public class RailwayService {
         System.out.println("Fare Per Seat  : " + train.getFarePerSeat());
     }
 
-    // 3. Find Train by Train Number
+    // Find Train by Train Number (not in the 7-option menu, kept for later use)
     public void findTrainByNumber(Scanner scanner) {
         Integer trainNumber = readTrainNumber(scanner);
         if (trainNumber == null) {
@@ -92,7 +91,7 @@ public class RailwayService {
         findTrainByNumber(new Scanner(System.in));
     }
 
-    // 4. Check Seat Availability
+    // Check Seat Availability (not in the 7-option menu, kept for later use)
     public void checkSeatAvailability(Scanner scanner) {
         Integer trainNumber = readTrainNumber(scanner);
         if (trainNumber == null) {
@@ -113,7 +112,7 @@ public class RailwayService {
         checkSeatAvailability(new Scanner(System.in));
     }
 
-    // 5. View Train Details
+    // View Train Details (not in the 7-option menu, kept for later use)
     public void viewTrainDetails(Scanner scanner) {
         Integer trainNumber = readTrainNumber(scanner);
         if (trainNumber == null) {
@@ -133,23 +132,157 @@ public class RailwayService {
         viewTrainDetails(new Scanner(System.in));
     }
 
-    // Existing methods for features 6-9 (preserved)
-    public void bookTicket() {
-        // TODO: pick a train, collect passenger details, calculate fare, create booking
-        System.out.println("Feature under development");
+    // ------------------------------------------------------------
+    // 3. Book Ticket
+    // ------------------------------------------------------------
+    public void bookTicket(Scanner scanner) {
+        trainManager.displayAllTrains();
+
+        Integer trainNumber = readTrainNumber(scanner);
+        if (trainNumber == null) {
+            return;
+        }
+
+        Train train = trainManager.findTrainByNumber(trainNumber);
+        if (train == null) {
+            System.out.println("Train not found.");
+            return;
+        }
+
+        if (train.getAvailableSeats() == 0) {
+            System.out.println("Sorry, this train is full.");
+            return;
+        }
+
+        // Passenger module asks for the count and all details itself
+        PassengerManager passengerManager = new PassengerManager(scanner);
+        passengerManager.collectPassengers();
+        ArrayList<Passenger> passengers = passengerManager.getPassengers();
+        int count = passengers.size();
+
+        // bookSeats() returns false when there are not enough seats
+        if (!train.bookSeats(count)) {
+            System.out.println("Not enough seats! Only " + train.getAvailableSeats() + " seat(s) available.");
+            return;
+        }
+
+        double totalFare = fareCalculator.calculateFare(train.getFarePerSeat(), count);
+        String pnr = generatePnr();
+
+        Booking booking = new Booking(pnr, train, passengers, totalFare, "CONFIRMED");
+        bookingManager.createBooking(booking);
+
+        System.out.println("\nBOOKING CONFIRMED!\n");
+        printBooking(booking);
     }
 
-    public void cancelTicket() {
-        // TODO: ask for PNR, cancel the booking, restore available seats
-        System.out.println("Feature under development");
+    // ------------------------------------------------------------
+    // 4. Cancel Ticket
+    // ------------------------------------------------------------
+    public void cancelTicket(Scanner scanner) {
+        System.out.print("Enter PNR Number: ");
+        String pnr = scanner.nextLine().trim();
+
+        Booking booking = findBooking(pnr);
+
+        if (booking == null) {
+            System.out.println("Booking not found!");
+            return;
+        }
+
+        if (booking.getBookingStatus().equals("CANCELLED")) {
+            System.out.println("This ticket is already cancelled.");
+            return;
+        }
+
+        System.out.println("\nBooking Found!\n");
+        for (Passenger p : booking.getPassengers()) {
+            System.out.println("Passenger: " + p.getName());
+        }
+        System.out.println("Train: " + booking.getTrain().getTrainName());
+
+        System.out.print("\nConfirm Cancellation? Y/N: ");
+        String answer = scanner.nextLine().trim();
+
+        if (answer.equalsIgnoreCase("Y")) {
+            booking.setBookingStatus("CANCELLED");
+            booking.getTrain().cancelSeats(booking.getPassengers().size());
+
+            System.out.println("\nTicket Cancelled Successfully!");
+            System.out.println("Available Seats Updated!");
+        } else if (answer.equalsIgnoreCase("N")) {
+            System.out.println("Cancellation aborted.");
+        } else {
+            System.out.println("Invalid answer. Cancellation aborted.");
+        }
     }
 
-    public void checkPnrStatus() {
-        // TODO: ask for PNR and show booking details
-        System.out.println("Feature under development");
+    // ------------------------------------------------------------
+    // 5. Check PNR Status
+    // ------------------------------------------------------------
+    public void checkPnrStatus(Scanner scanner) {
+        System.out.print("Enter PNR: ");
+        String pnr = scanner.nextLine().trim();
+
+        Booking booking = findBooking(pnr);
+
+        if (booking == null) {
+            System.out.println("Booking not found!");
+        } else {
+            System.out.println("\nPNR Status: " + booking.getBookingStatus());
+        }
     }
 
+    // ------------------------------------------------------------
+    // 6. View All Bookings
+    // ------------------------------------------------------------
     public void viewAllBookings() {
-        bookingManager.displayAllBookings();
+        ArrayList<Booking> bookings = bookingManager.getBookings();
+
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings yet.");
+            return;
+        }
+
+        for (Booking booking : bookings) {
+            printBooking(booking);
+            System.out.println("--------------------------------");
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Helper methods
+    // ------------------------------------------------------------
+
+    // Searches the booking list for a PNR. Returns null if not found.
+    private Booking findBooking(String pnr) {
+        for (Booking booking : bookingManager.getBookings()) {
+            if (booking.getPnrNumber().equals(pnr)) {
+                return booking;
+            }
+        }
+        return null;
+    }
+
+    // Makes a random 10-digit PNR that is not already used
+    private String generatePnr() {
+        Random random = new Random();
+        String pnr;
+        do {
+            long number = 1000000000L + (long) (random.nextDouble() * 9000000000L);
+            pnr = String.valueOf(number);
+        } while (findBooking(pnr) != null);
+        return pnr;
+    }
+
+    // Prints one booking
+    private void printBooking(Booking booking) {
+        System.out.println("PNR: " + booking.getPnrNumber());
+        System.out.println("Train: " + booking.getTrain().getTrainName());
+        for (Passenger p : booking.getPassengers()) {
+            System.out.println("Passenger: " + p.getName());
+        }
+        System.out.println("Total Fare: Rs. " + booking.getTotalFare());
+        System.out.println("Status: " + booking.getBookingStatus());
     }
 }

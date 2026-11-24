@@ -26,5 +26,6 @@ public class Booking {
     public double getTotalFare() { return totalFare; }
     public String getBookingStatus() { return bookingStatus; }
 
-    // TODO: add setBookingStatus() when cancellation is implemented
+    public void setBookingStatus(String bookingStatus) { this.bookingStatus = bookingStatus; }
 }
+
