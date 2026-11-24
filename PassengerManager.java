@@ -62,9 +62,9 @@ public class PassengerManager {
         System.out.println("Passenger details added successfully!");
     }
 
-    // ---------------------------------------------------------------
+    // ------------------------------------------------------------
     // Input helpers: each one loops until the user enters valid data
-    // ---------------------------------------------------------------
+    // ------------------------------------------------------------
     private int readPassengerCount() {
         while (true) {
             System.out.print("Enter number of passengers: ");
