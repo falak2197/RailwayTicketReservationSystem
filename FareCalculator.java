@@ -3,9 +3,14 @@
 
 public class FareCalculator {
 
-    // Basic fare: fare per seat x number of passengers
+    // Total Fare = Fare per Seat x Number of Passengers
     public double calculateFare(double farePerSeat, int numberOfPassengers) {
-        // TODO: add discounts (senior citizens, children) if required
+        if (farePerSeat < 0) {
+            throw new IllegalArgumentException("Fare cannot be negative.");
+        }
+        if (numberOfPassengers <= 0) {
+            throw new IllegalArgumentException("Passenger count must be at least 1.");
+        }
         return farePerSeat * numberOfPassengers;
     }
 }
