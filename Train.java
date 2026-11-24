@@ -42,4 +42,40 @@ public class Train {
 
     public double getFarePerSeat() { return farePerSeat; }
     public void setFarePerSeat(double farePerSeat) { this.farePerSeat = farePerSeat; }
+
+    /**
+     * Books the requested number of seats if available.
+     * Reduces availableSeats on success.
+     *
+     * @param seats number of seats to book (must be > 0)
+     * @return true if booking succeeded, false otherwise
+     */
+    public boolean bookSeats(int seats) {
+        if (seats <= 0) {
+            return false;
+        }
+        if (seats <= availableSeats) {
+            availableSeats -= seats;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Cancels the requested number of seats and restores them.
+     * Increases availableSeats without exceeding totalSeats.
+     *
+     * @param seats number of seats to cancel (must be > 0)
+     * @return true if cancellation succeeded, false otherwise
+     */
+    public boolean cancelSeats(int seats) {
+        if (seats <= 0) {
+            return false;
+        }
+        if (availableSeats + seats <= totalSeats) {
+            availableSeats += seats;
+            return true;
+        }
+        return false;
+    }
 }
