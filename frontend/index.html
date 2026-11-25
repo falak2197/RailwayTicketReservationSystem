@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailReserve — Railway Ticket Reservation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <!-- Sticky Top Navigation -->
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="brand" data-nav="home">
+                <span class="brand-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="4" y="3" width="16" height="14" rx="3"></rect>
+                        <path d="M4 11h16"></path>
+                        <path d="M12 3v8"></path>
+                        <circle cx="8" cy="14" r="1"></circle>
+                        <circle cx="16" cy="14" r="1"></circle>
+                        <path d="M8 17l-2 4"></path>
+                        <path d="M16 17l2 4"></path>
+                        <path d="M6 20h12"></path>
+                    </svg>
+                </span>
+                <span class="brand-text">
+                    <strong>RailReserve</strong>
+                    <small>Express Ticket Portal</small>
+                </span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle navigation"
+                aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-menu" id="navMenu" aria-label="Primary Navigation">
+                <a href="#home" class="nav-link active" data-nav="home">Home</a>
+                <a href="#book" class="nav-link" data-nav="book">Book Tickets</a>
+                <a href="#trains" class="nav-link" data-nav="trains">Trains</a>
+                <a href="#pnr" class="nav-link" data-nav="pnr">PNR Status</a>
+                <a href="#cancel" class="nav-link" data-nav="cancel">Cancel Ticket</a>
+                <a href="#bookings" class="nav-link" data-nav="bookings">My Bookings</a>
+                <a href="#contact" class="nav-link" data-nav="contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <main>
+        <!-- =======================================================
+             A. HOME PAGE
+             ======================================================= -->
+        <section id="section-home" class="page-section active">
+            <div class="hero">
+                <div class="hero-bg-pattern" aria-hidden="true"></div>
+                <div class="container hero-grid">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <span class="pulse-dot"></span>
+                            Live Java Reservation Engine
+                        </div>
+                        <h1>Your Journey Begins Here</h1>
+                        <p class="hero-subtitle">
+                            Search live routes, inspect real-time seat availability, calculate exact fares, and reserve
+                            railway tickets with instant 10-digit PNR confirmation.
+                        </p>
+                        <div class="hero-metrics">
+                            <div class="metric-item">
+                                <strong id="heroTrainCount">--</strong>
+                                <span>Active Trains</span>
+                            </div>
+                            <div class="metric-divider"></div>
+                            <div class="metric-item">
+                                <strong id="heroSeatCount">--</strong>
+                                <span>Available Seats</span>
+                            </div>
+                            <div class="metric-divider"></div>
+                            <div class="metric-item">
+                                <strong id="heroBookingCount">--</strong>
+                                <span>Total Bookings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual" aria-hidden="true">
+                        <div class="train-illustration-card">
+                            <svg class="hero-train-svg" viewBox="0 0 420 240" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="skyGlow" x1="0" y1="0" x2="420" y2="240"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.45" />
+                                        <stop offset="100%" stop-color="#0B1F3A" stop-opacity="0.1" />
+                                    </linearGradient>
+                                    <linearGradient id="trainBody" x1="40" y1="70" x2="360" y2="165"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#FFFFFF" />
+                                        <stop offset="100%" stop-color="#E2E8F0" />
+                                    </linearGradient>
+                                </defs>
+                                <rect x="10" y="10" width="400" height="220" rx="18" fill="url(#skyGlow)"
+                                    stroke="rgba(255,255,255,0.14)" />
+                                <circle cx="330" cy="56" r="24" fill="#F97316" fill-opacity="0.22" />
+                                <circle cx="330" cy="56" r="14" fill="#F97316" fill-opacity="0.45" />
+                                <path d="M25 182 H395" stroke="rgba(255,255,255,0.28)" stroke-width="3"
+                                    stroke-linecap="round" />
+                                <path d="M25 190 H395" stroke="#F97316" stroke-width="2" stroke-dasharray="10 8"
+                                    stroke-linecap="round" />
+                                <path
+                                    d="M55 156 L305 156 C338 156 364 139 374 118 C378 109 372 95 352 90 L292 78 L55 78 C46 78 40 84 40 93 L40 141 C40 150 46 156 55 156 Z"
+                                    fill="url(#trainBody)" />
+                                <path d="M40 122 H371" stroke="#F97316" stroke-width="6" />
+                                <path d="M40 130 H366" stroke="#0F294A" stroke-width="3" />
+                                <path d="M294 84 L344 94 C354 96 360 104 356 112 L294 112 Z" fill="#0F294A" />
+                                <rect x="64" y="92" width="42" height="22" rx="4" fill="#0F294A" />
+                                <rect x="118" y="92" width="42" height="22" rx="4" fill="#0F294A" />
+                                <rect x="172" y="92" width="42" height="22" rx="4" fill="#0F294A" />
+                                <rect x="226" y="92" width="48" height="22" rx="4" fill="#0F294A" />
+                                <circle cx="88" cy="162" r="11" fill="#0F294A" stroke="#94A3B8" stroke-width="3" />
+                                <circle cx="136" cy="162" r="11" fill="#0F294A" stroke="#94A3B8" stroke-width="3" />
+                                <circle cx="256" cy="162" r="11" fill="#0F294A" stroke="#94A3B8" stroke-width="3" />
+                                <circle cx="304" cy="162" r="11" fill="#0F294A" stroke="#94A3B8" stroke-width="3" />
+                                <path d="M30 62 H110" stroke="rgba(255,255,255,0.25)" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <path d="M60 48 H150" stroke="rgba(249,115,22,0.45)" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Search Form Card -->
+            <div class="container search-card-wrapper">
+                <div class="card search-hero-card">
+                    <div class="search-card-header">
+                        <h2>Search Trains</h2>
+                        <span class="search-hint">Find available trains between stations</span>
+                    </div>
+                    <form id="heroSearchForm" class="hero-search-form">
+                        <div class="form-group">
+                            <label for="heroSource">From Station</label>
+                            <input type="text" id="heroSource" list="sourceOptions" placeholder="e.g. Delhi" required>
+                        </div>
+
+                        <button type="button" id="swapStationsBtn" class="btn-swap" title="Swap Source and Destination"
+                            aria-label="Swap Source and Destination">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+                            </svg>
+                        </button>
+
+                        <div class="form-group">
+                            <label for="heroDestination">To Station</label>
+                            <input type="text" id="heroDestination" list="destinationOptions" placeholder="e.g. Mumbai"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroDate">Journey Date</label>
+                            <input type="date" id="heroDate" required>
+                        </div>
+
+                        <div class="form-group form-submit-group">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                                Search Trains
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Dynamic route shortcuts populated from /api/trains -->
+                    <div class="popular-routes">
+                        <span class="popular-label">Available Routes:</span>
+                        <div id="dynamicRouteChips" class="route-chips">
+                            <span class="chip-loading">Loading routes from backend...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <datalist id="sourceOptions"></datalist>
+            <datalist id="destinationOptions"></datalist>
+
+            <!-- Quick Services & Inline PNR Lookup -->
+            <div class="container home-services-section">
+                <div class="section-heading-row">
+                    <div>
+                        <span class="eyebrow">Services</span>
+                        <h2>Everything You Need for Rail Travel</h2>
+                    </div>
+                    <button type="button" class="btn btn-outline" data-nav="trains">View All Trains</button>
+                </div>
+
+                <div class="services-grid">
+                    <article class="service-card" data-nav-card="trains">
+                        <div class="service-icon navy">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="3" width="16" height="14" rx="2"></rect>
+                                <path d="M4 11h16M8 17l-2 4M16 17l2 4"></path>
+                            </svg>
+                        </div>
+                        <h3>Explore All Trains</h3>
+                        <p>Browse routes, inspect total &amp; remaining seat counts, and compare fares per seat.</p>
+                        <span class="service-link">Browse Trains &rarr;</span>
+                    </article>
+
+                    <article class="service-card" data-nav-card="book">
+                        <div class="service-icon orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7z">
+                                </path>
+                                <path d="M13 5v14"></path>
+                            </svg>
+                        </div>
+                        <h3>Book Tickets</h3>
+                        <p>Add multiple passengers with instant field validation and real-time fare calculation.</p>
+                        <span class="service-link">Book Now &rarr;</span>
+                    </article>
+
+                    <article class="service-card" data-nav-card="pnr">
+                        <div class="service-icon navy">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2">
+                                </path>
+                                <rect x="9" y="3" width="6" height="4" rx="1"></rect>
+                                <path d="M9 14l2 2 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3>Check PNR Status</h3>
+                        <p>Look up passenger rosters, train allocation, and live booking confirmation status.</p>
+                        <span class="service-link">Track PNR &rarr;</span>
+                    </article>
+
+                    <article class="service-card" data-nav-card="cancel">
+                        <div class="service-icon orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M15 9l-6 6M9 9l6 6"></path>
+                            </svg>
+                        </div>
+                        <h3>Cancel Ticket</h3>
+                        <p>Review booking details, confirm cancellation safely, and restore seats automatically.</p>
+                        <span class="service-link">Manage Cancellation &rarr;</span>
+                    </article>
+                </div>
+
+                <!-- Quick PNR Bar on Home -->
+                <div class="card quick-pnr-banner">
+                    <div class="quick-pnr-text">
+                        <h3>Already have a 10-digit PNR?</h3>
+                        <p>Verify your ticket status or passenger list immediately.</p>
+                    </div>
+                    <form id="homeQuickPnrForm" class="quick-pnr-form">
+                        <input type="text" id="homeQuickPnrInput" placeholder="Enter 10-digit PNR number"
+                            inputmode="numeric" required>
+                        <button type="submit" class="btn btn-primary">Check PNR</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             B. TRAINS & SEARCH TRAINS
+             ======================================================= -->
+        <section id="section-trains" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Train Directory</span>
+                        <h1>Available Trains &amp; Search</h1>
+                        <p id="trainsSubtitle">Live schedule and seat availability retrieved directly from the Java
+                            backend.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" id="showAllTrainsBtn" class="btn btn-outline">Show All Trains</button>
+                    </div>
+                </div>
+
+                <!-- Search Controls -->
+                <div class="card filter-bar-card">
+                    <div class="filter-forms-grid">
+                        <form id="trainsRouteSearchForm" class="inline-search-form">
+                            <div class="form-group">
+                                <label for="trainsSourceInput">Source</label>
+                                <input type="text" id="trainsSourceInput" list="sourceOptions"
+                                    placeholder="Source station" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="trainsDestInput">Destination</label>
+                                <input type="text" id="trainsDestInput" list="destinationOptions"
+                                    placeholder="Destination station" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search Route</button>
+                        </form>
+
+                        <form id="trainNumberSearchForm" class="inline-search-form single-field">
+                            <div class="form-group">
+                                <label for="trainNumberInput">Find by Train Number</label>
+                                <input type="number" id="trainNumberInput" placeholder="e.g. 12001" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Find Train</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View Switcher & Count -->
+                <div class="results-toolbar">
+                    <p id="trainsResultCount" class="results-count">Loading trains...</p>
+                    <div class="view-toggle" role="group" aria-label="View layout">
+                        <button type="button" id="viewCardsBtn" class="toggle-btn active">Cards</button>
+                        <button type="button" id="viewTableBtn" class="toggle-btn">Table</button>
+                    </div>
+                </div>
+
+                <div id="trainsContainer" class="trains-grid"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             C. TRAIN DETAILS
+             ======================================================= -->
+        <section id="section-train-details" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <button type="button" class="btn-back" data-nav="trains">&larr; Back to Trains</button>
+                        <h1>Complete Train Details</h1>
+                    </div>
+                    <form id="detailLookupForm" class="inline-lookup-mini">
+                        <input type="number" id="detailLookupInput" placeholder="Train No." min="1" required>
+                        <button type="submit" class="btn btn-outline">Check Availability</button>
+                    </form>
+                </div>
+
+                <div id="trainDetailsContainer">
+                    <div class="card empty-state">
+                        <h3>Select a train to inspect</h3>
+                        <p>Choose "View Details" from the Trains list or enter a train number above.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             D. BOOK TICKETS
+             ======================================================= -->
+        <section id="section-book" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Reservation</span>
+                        <h1>Book Train Tickets</h1>
+                        <p>Select a train, add one or more passengers, verify live fare, and confirm your booking.</p>
+                    </div>
+                </div>
+
+                <!-- Booking Form Layout -->
+                <div id="bookingWorkspace" class="booking-layout">
+                    <form id="bookingForm" class="booking-form-col" novalidate>
+                        <div class="card form-section-card">
+                            <h3>1. Journey &amp; Train Selection</h3>
+                            <div class="two-col-grid">
+                                <div class="form-group">
+                                    <label for="bookTrainSelect">Select Train <span class="req">*</span></label>
+                                    <select id="bookTrainSelect" required>
+                                        <option value="">-- Select a Train --</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookJourneyDate">Journey Date</label>
+                                    <input type="date" id="bookJourneyDate">
+                                </div>
+                            </div>
+                            <div id="selectedTrainBanner" class="selected-train-banner hidden"></div>
+                        </div>
+
+                        <div class="card form-section-card">
+                            <div class="passengers-header">
+                                <div>
+                                    <h3>2. Passenger Details</h3>
+                                    <p class="muted-text">Validated by backend rules: non-empty name, age &ge; 1,
+                                        Male/Female/Other, 10-digit phone.</p>
+                                </div>
+                                <button type="button" id="addPassengerBtn" class="btn btn-outline btn-sm">+ Add
+                                    Passenger</button>
+                            </div>
+
+                            <div id="passengersList" class="passengers-list"></div>
+                        </div>
+
+                        <div id="bookingFormError" class="alert alert-error hidden" role="alert"></div>
+
+                        <div class="booking-submit-bar">
+                            <button type="submit" id="confirmBookingBtn" class="btn btn-primary btn-lg">
+                                Confirm &amp; Book Ticket
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Live Fare Summary Panel -->
+                    <aside class="booking-summary-col">
+                        <div class="card fare-summary-card">
+                            <h3>Fare &amp; Seat Summary</h3>
+                            <p class="muted-text">Calculated live by Java <code>FareCalculator</code></p>
+
+                            <div class="summary-rows">
+                                <div class="summary-row">
+                                    <span>Selected Train</span>
+                                    <strong id="summaryTrainName">None selected</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Route</span>
+                                    <strong id="summaryRoute">—</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Available Seats</span>
+                                    <strong id="summarySeats">—</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Fare per Seat</span>
+                                    <strong id="summaryFarePerSeat">Rs. 0.00</strong>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Passengers</span>
+                                    <strong id="summaryPassengerCount">1</strong>
+                                </div>
+                            </div>
+
+                            <div class="summary-total">
+                                <span>Total Fare</span>
+                                <strong id="summaryTotalFare">Rs. 0.00</strong>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+                <!-- Booking Confirmation Panel (shown after successful booking) -->
+                <div id="bookingConfirmationPanel" class="hidden"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             E. CANCEL TICKET
+             ======================================================= -->
+        <section id="section-cancel" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Manage Booking</span>
+                        <h1>Cancel Ticket</h1>
+                        <p>Enter your 10-digit PNR number to review booking details before confirming cancellation.</p>
+                    </div>
+                </div>
+
+                <div class="card lookup-card">
+                    <form id="cancelLookupForm" class="lookup-form">
+                        <div class="form-group">
+                            <label for="cancelPnrInput">PNR Number</label>
+                            <input type="text" id="cancelPnrInput" placeholder="Enter 10-digit PNR (e.g. 1234567890)"
+                                inputmode="numeric" required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Find Booking</button>
+                    </form>
+                </div>
+
+                <div id="cancelResultContainer" class="lookup-result"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             F. PNR STATUS
+             ======================================================= -->
+        <section id="section-pnr" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Live Tracking</span>
+                        <h1>Check PNR Status</h1>
+                        <p>Search any reservation by PNR to inspect train details, passenger records, and booking
+                            status.</p>
+                    </div>
+                </div>
+
+                <div class="card lookup-card">
+                    <form id="pnrSearchForm" class="lookup-form">
+                        <div class="form-group">
+                            <label for="pnrInput">Enter PNR Number</label>
+                            <input type="text" id="pnrInput" placeholder="Enter 10-digit PNR number" inputmode="numeric"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Check Status</button>
+                    </form>
+                </div>
+
+                <div id="pnrResultContainer" class="lookup-result"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             G. MY BOOKINGS
+             ======================================================= -->
+        <section id="section-bookings" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Reservations History</span>
+                        <h1>My Bookings</h1>
+                        <p>All bookings stored in the active Railway Reservation backend session.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button type="button" id="refreshBookingsBtn" class="btn btn-outline">Refresh List</button>
+                        <button type="button" class="btn btn-primary" data-nav="book">+ New Booking</button>
+                    </div>
+                </div>
+
+                <div class="bookings-stats" id="bookingsStats">
+                    <div class="stat-pill"><span>Total</span><strong id="statTotalBookings">0</strong></div>
+                    <div class="stat-pill confirmed"><span>Confirmed</span><strong id="statConfirmedBookings">0</strong>
+                    </div>
+                    <div class="stat-pill cancelled"><span>Cancelled</span><strong id="statCancelledBookings">0</strong>
+                    </div>
+                </div>
+
+                <div id="myBookingsContainer"></div>
+            </div>
+        </section>
+
+        <!-- =======================================================
+             CONTACT SECTION
+             ======================================================= -->
+        <section id="section-contact" class="page-section">
+            <div class="container section-pad">
+                <div class="page-header">
+                    <div>
+                        <span class="eyebrow">Helpdesk</span>
+                        <h1>Contact &amp; Passenger Support</h1>
+                        <p>24x7 assistance for reservations, PNR inquiries, and ticket cancellations.</p>
+                    </div>
+                </div>
+
+                <div class="contact-grid">
+                    <div class="card contact-card">
+                        <h3>Send Us a Message</h3>
+                        <p class="muted-text" style="margin-bottom:16px;">Questions about reservations, PNR lookup, or cancellations? Submit your inquiry directly to our Java backend helpdesk.</p>
+                        <form id="contactForm" class="contact-form" novalidate>
+                            <div class="form-group">
+                                <label for="contactName">Full Name <span class="req">*</span></label>
+                                <input type="text" id="contactName" placeholder="e.g. Priya Verma" required>
+                                <span class="field-error" id="err-contactName"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email Address <span class="req">*</span></label>
+                                <input type="email" id="contactEmail" placeholder="e.g. priya@example.com" required>
+                                <span class="field-error" id="err-contactEmail"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactSubject">Subject <span class="req">*</span></label>
+                                <input type="text" id="contactSubject" placeholder="e.g. Assistance with PNR cancellation" required>
+                                <span class="field-error" id="err-contactSubject"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMessage">Message <span class="req">*</span></label>
+                                <textarea id="contactMessage" rows="4" placeholder="Describe your inquiry (at least 10 characters)..." required></textarea>
+                                <span class="field-error" id="err-contactMessage"></span>
+                            </div>
+                            <div id="contactFormStatus" class="alert hidden" role="alert"></div>
+                            <button type="submit" id="contactSubmitBtn" class="btn btn-primary btn-lg">Send Message</button>
+                        </form>
+                    </div>
+
+                    <div class="contact-info-stack">
+                        <div class="card contact-card">
+                            <h3>Reservation Support Desk</h3>
+                            <ul class="contact-list">
+                                <li>
+                                    <strong>24x7 Helpline:</strong>
+                                    <span>139 / +91 11 2345 6789</span>
+                                </li>
+                                <li>
+                                    <strong>Passenger Care Email:</strong>
+                                    <span>support@railreserve.local</span>
+                                </li>
+                                <li>
+                                    <strong>Headquarters:</strong>
+                                    <span>Rail Bhavan Plaza, Central Station Road, New Delhi</span>
+                                </li>
+                                <li>
+                                    <strong>Counter Hours:</strong>
+                                    <span>Monday – Sunday, 00:00 – 23:59 IST</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="card contact-card">
+                            <h3>Booking &amp; Cancellation Policy</h3>
+                            <div class="policy-items">
+                                <div class="policy-item">
+                                    <strong>Instant PNR Generation</strong>
+                                    <p>Every confirmed booking receives a unique 10-digit PNR number generated by the Java
+                                        <code>BookingManager</code>.
+                                    </p>
+                                </div>
+                                <div class="policy-item">
+                                    <strong>Real-Time Seat Restoration</strong>
+                                    <p>Cancelling a confirmed ticket immediately restores the booked seats to the train's
+                                        available seat pool.</p>
+                                </div>
+                                <div class="policy-item">
+                                    <strong>Passenger Validation</strong>
+                                    <p>All passenger entries require a valid name, positive age, standard gender
+                                        (Male/Female/Other), and 10-digit phone number.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Cancellation Confirmation Modal -->
+    <div id="cancelModal" class="modal-overlay hidden" role="dialog" aria-modal="true"
+        aria-labelledby="cancelModalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="cancelModalTitle">Confirm Ticket Cancellation</h3>
+                <button type="button" id="closeCancelModalBtn" class="modal-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="cancelModalMessage">Are you sure you want to cancel this ticket?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="abortCancelModalBtn" class="btn btn-outline">Keep Ticket</button>
+                <button type="button" id="confirmCancelModalBtn" class="btn btn-danger">Yes, Cancel Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div>
+                <div class="footer-brand">RailReserve</div>
+                <p class="footer-desc">Modern web interface integrated directly with the Core Java Railway Ticket
+                    Reservation System.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#home" data-nav="home">Home</a>
+                <a href="#trains" data-nav="trains">Trains</a>
+                <a href="#book" data-nav="book">Book Tickets</a>
+                <a href="#pnr" data-nav="pnr">PNR Status</a>
+                <a href="#cancel" data-nav="cancel">Cancel Ticket</a>
+                <a href="#bookings" data-nav="bookings">My Bookings</a>
+                <a href="#contact" data-nav="contact">Contact</a>
+            </div>
+            <div class="footer-status">
+                <span class="backend-pill" id="backendStatusPill">
+                    <span class="status-dot"></span>
+                    Connecting to Java Backend...
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

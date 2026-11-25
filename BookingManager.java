@@ -45,8 +45,11 @@ public class BookingManager {
 
         double totalFare = calculateTotalFare(train, count);
 
-        // Reduce available seats
-        train.bookSeats(count);
+        // Reduce available seats and verify deduction succeeded
+        if (!train.bookSeats(count)) {
+            throw new IllegalArgumentException("Not enough seats! Only "
+                    + train.getAvailableSeats() + " seat(s) available.");
+        }
 
         long pnr = generatePNR();
         Booking booking = new Booking(pnr, train, passengers, totalFare, "CONFIRMED");
