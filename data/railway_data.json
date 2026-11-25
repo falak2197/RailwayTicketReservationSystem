@@ -1,0 +1,16 @@
+{
+  "trains": [
+    {"trainNumber": 12001, "availableSeats": 100},
+    {"trainNumber": 12002, "availableSeats": 199},
+    {"trainNumber": 12003, "availableSeats": 150}
+  ],
+  "bookings": [
+    {
+      "pnrNumber": 3157761701,
+      "trainNumber": 12002,
+      "totalFare": 2200.0,
+      "bookingStatus": "CONFIRMED",
+      "passengers": [{"passengerId":101,"name":"dfgvbn","age":23,"gender":"Male","phoneNumber":"1234567890"}]
+    }
+  ]
+}

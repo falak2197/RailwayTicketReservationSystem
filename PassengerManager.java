@@ -185,6 +185,58 @@ public class PassengerManager {
     }
 
     // ---------------------------------------------------------------
+    // Programmatic integration helpers (used by Web API via RailwayService)
+    // ---------------------------------------------------------------
+
+    /**
+     * Clears the internal passenger list before collecting a new web booking.
+     */
+    public void clearPassengers() {
+        passengers.clear();
+    }
+
+    /**
+     * Advances nextPassengerId if persisted bookings already used higher IDs,
+     * avoiding duplicate Passenger IDs after a server restart.
+     */
+    public void ensureNextPassengerId(int minNextId) {
+        if (minNextId > this.nextPassengerId) {
+            this.nextPassengerId = minNextId;
+        }
+    }
+
+    /**
+     * Validates and adds one passenger without console Scanner prompts,
+     * reusing PassengerValidator rules and the shared passengerId sequence.
+     */
+    public Passenger addPassenger(String name, int age, String gender, String phoneNumber) {
+        if (!PassengerValidator.isValidName(name)) {
+            throw new IllegalArgumentException("Invalid name! Please enter a valid name.");
+        }
+        if (!PassengerValidator.isValidAge(age)) {
+            throw new IllegalArgumentException("Invalid age! Age must be a positive number.");
+        }
+        if (!PassengerValidator.isValidGender(gender)) {
+            throw new IllegalArgumentException("Invalid gender! Please enter Male, Female or Other.");
+        }
+        String trimmedPhone = phoneNumber == null ? "" : phoneNumber.trim();
+        if (!PassengerValidator.isValidPhoneNumber(trimmedPhone)) {
+            throw new IllegalArgumentException("Invalid phone number! Please enter a valid 10-digit number.");
+        }
+
+        Passenger passenger = new Passenger(
+                nextPassengerId,
+                name.trim(),
+                age,
+                formatGender(gender),
+                trimmedPhone
+        );
+        nextPassengerId++;
+        passengers.add(passenger);
+        return passenger;
+    }
+
+    // ---------------------------------------------------------------
     // Stand-alone demo so Member 2 can test the module on its own
     // ---------------------------------------------------------------
     public static void main(String[] args) {

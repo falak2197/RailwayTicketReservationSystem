@@ -8,10 +8,12 @@ public class RailwayService {
 
     private TrainManager trainManager;
     private BookingManager bookingManager;
+    private PassengerManager webPassengerManager;
 
     public RailwayService() {
         trainManager = new TrainManager();
         bookingManager = new BookingManager();
+        webPassengerManager = new PassengerManager(new Scanner(""));
     }
 
     // 1. View All Trains
@@ -210,8 +212,12 @@ public class RailwayService {
         String answer = scanner.nextLine().trim();
 
         if (answer.equalsIgnoreCase("Y")) {
+            boolean restored = booking.getTrain().cancelSeats(booking.getPassengers().size());
+            if (!restored) {
+                System.out.println("Cancellation failed: unable to restore seats safely.");
+                return;
+            }
             booking.setBookingStatus("CANCELLED");
-            booking.getTrain().cancelSeats(booking.getPassengers().size());
 
             System.out.println("\nTicket Cancelled Successfully!");
             System.out.println("Available Seats Updated!");
@@ -245,5 +251,68 @@ public class RailwayService {
     // ------------------------------------------------------------
     public void viewAllBookings() {
         bookingManager.displayAllBookings();
+    }
+
+    // ------------------------------------------------------------
+    // Web API Integration Methods (reuse existing managers & logic)
+    // ------------------------------------------------------------
+
+    public ArrayList<Train> getAllTrains() {
+        return trainManager.getTrains();
+    }
+
+    public ArrayList<Train> searchTrains(String source, String destination) {
+        return trainManager.searchTrains(source, destination);
+    }
+
+    public Train findTrainByNumber(int trainNumber) {
+        return trainManager.findTrainByNumber(trainNumber);
+    }
+
+    public double calculateFare(int trainNumber, int passengerCount) {
+        Train train = trainManager.findTrainByNumber(trainNumber);
+        if (train == null) {
+            throw new IllegalArgumentException("Train not found.");
+        }
+        return bookingManager.calculateTotalFare(train, passengerCount);
+    }
+
+    public PassengerManager getWebPassengerManager() {
+        return webPassengerManager;
+    }
+
+    public Booking createBooking(int trainNumber, ArrayList<Passenger> passengers) {
+        Train train = trainManager.findTrainByNumber(trainNumber);
+        if (train == null) {
+            throw new IllegalArgumentException("Train not found.");
+        }
+        if (train.getAvailableSeats() == 0) {
+            throw new IllegalArgumentException("Sorry, this train is full.");
+        }
+        return bookingManager.createBooking(train, passengers);
+    }
+
+    public Booking findBookingByPnr(long pnr) {
+        return bookingManager.findBooking(pnr);
+    }
+
+    public Booking cancelTicket(long pnr) {
+        Booking booking = bookingManager.findBooking(pnr);
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking not found!");
+        }
+        if ("CANCELLED".equalsIgnoreCase(booking.getBookingStatus())) {
+            throw new IllegalStateException("This ticket is already cancelled.");
+        }
+        int seatsToRestore = booking.getPassengers().size();
+        if (!booking.getTrain().cancelSeats(seatsToRestore)) {
+            throw new IllegalStateException("Unable to restore seats for this booking.");
+        }
+        booking.setBookingStatus("CANCELLED");
+        return booking;
+    }
+
+    public ArrayList<Booking> getAllBookings() {
+        return bookingManager.getBookings();
     }
 }
